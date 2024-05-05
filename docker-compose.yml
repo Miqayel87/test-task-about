@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - app
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/var/www/html
+    depends_on:
+      - database
+    environment:
+      - DB_HOST=database
+      - DB_DATABASE=mydatabase
+      - DB_USERNAME=myuser
+      - DB_PASSWORD=mypassword
+
+  database:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=mydatabase
+      - MYSQL_USER=myuser
+      - MYSQL_PASSWORD=mypassword
+      - MYSQL_ROOT_PASSWORD=rootpassword
+
+volumes:
+  db_data:
